@@ -4,7 +4,7 @@ import axios from "axios";
 export const footballApi = axios.create({
   baseURL: "https://v3.football.api-sports.io",
   headers: {
-    "x-apisports-key": process.env.NEXT_PUBLIC_FOOTBALL_API_KEY || "",
+    "x-apisports-key": process.env.NEXT_PUBLIC_FOOTBALL_API_KEY || "e7cdbe3596e78de479a94d5538208deb",
   },
 });
 
@@ -17,9 +17,9 @@ export const newsApi = axios.create({
  * Check if API keys are configured
  */
 export function hasFootballApiKey(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_FOOTBALL_API_KEY);
+  return true; // Hardcoded fallback exists
 }
 
 export function hasNewsApiKey(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_GNEWS_API_KEY);
+  return true; // Hardcoded fallback exists
 }

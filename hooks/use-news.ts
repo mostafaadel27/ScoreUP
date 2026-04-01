@@ -16,7 +16,7 @@ async function fetchNews(page: number, limit: number): Promise<NewsArticle[]> {
       lang: "en",
       max: Math.min(limit, 10),
       page,
-      apikey: process.env.NEXT_PUBLIC_GNEWS_API_KEY,
+      apikey: process.env.NEXT_PUBLIC_GNEWS_API_KEY || "29b31a69a948363467a0f6ead2d36112",
     },
   });
 
