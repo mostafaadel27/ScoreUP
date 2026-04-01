@@ -10,20 +10,31 @@ async function fetchNews(page: number, limit: number): Promise<NewsArticle[]> {
     return mockNews.slice(0, page * limit);
   }
 
-  const { data } = await newsApi.get<GNewsResponse>("/top-headlines", {
-    params: {
-      category: "sports",
-      lang: "en",
-      max: Math.min(limit, 10),
-      page,
-      apikey: process.env.NEXT_PUBLIC_GNEWS_API_KEY || "29b31a69a948363467a0f6ead2d36112",
-    },
-  });
+  try {
+    const { data } = await newsApi.get<GNewsResponse>("/top-headlines", {
+      params: {
+        category: "sports",
+        lang: "en",
+        max: Math.min(limit, 10),
+        page,
+        apikey: process.env.NEXT_PUBLIC_GNEWS_API_KEY || "29b31a69a948363467a0f6ead2d36112",
+      },
+    });
 
-  return data.articles.map((a, i) => ({
-    ...a,
-    slug: a.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `article-${i}`,
-  }));
+    if (!data || !data.articles) {
+      console.warn("GNews API returned no articles or hit a rate limit. Falling back to mock data.");
+      return mockNews.slice(0, Math.min(limit, mockNews.length));
+    }
+
+    return data.articles.map((a, i) => ({
+      ...a,
+      slug: a.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `article-${i}`,
+    }));
+  } catch (error) {
+    console.error("News API Error:", error);
+    // Fallback to mock data on error (e.g., 429 Too Many Requests or CORS issues)
+    return mockNews.slice(0, Math.min(limit, mockNews.length));
+  }
 }
 
 export function useNews(page: number = 1, limit: number = 6) {
